@@ -9,7 +9,6 @@
             var userLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase(); 
             
             // Comprehensive CIS Language Registry Array
-            // ru = Russian, kk = Kazakh, be = Belarusian, uz = Uzbek, ky = Kyrgyz, tg = Tajik, am = Armenian, az = Azerbaijani
             var cisLanguages = ['ru', 'kk', 'be', 'uz', 'ky', 'tg', 'am', 'az'];
             
             // Checks if the user's primary browser language matches any in our CIS array
@@ -18,12 +17,11 @@
             });
             
             if (isCIS) {
-                // Instantly redirects all CIS/Russian-speaking traffic to your Russian YouTube Channel
-                // This utilizes the standard browser encoding format to ensure it never breaks on local ISPs
-                window.location.replace("https://www.youtube.com/\u0040\u0414\u0435\u0439\u043B\u0438\u0422\u0432\u0438\u043A");
+                // 🇷🇺 Forwards directly to your specific Russian Channel handle
+                window.location.replace("https://youtube.com/@ДайлиТвик");
             } else {
-                // Instantly redirects USA/Global traffic to your primary English monetization channel
-                window.location.replace("https://youtube.com");
+                // 🇺🇸 Forwards directly to your specific English Channel handle
+                window.location.replace("https://www.youtube.com/@DailyTweak");
             }
         })();
     </script>
