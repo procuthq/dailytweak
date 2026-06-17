@@ -1,31 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Daily Tweak Hub</title>
-    <script>
-        (function() {
-            // Reads the visitor's web browser language setting array and converts to lowercase
-            var userLang = (navigator.language || navigator.userLanguage || 'en').toLowerCase(); 
-            
-            // Comprehensive CIS Language Registry Array
-            var cisLanguages = ['ru', 'kk', 'be', 'uz', 'ky', 'tg', 'am', 'az'];
-            
-            // Checks if the user's primary browser language matches any in our CIS array
-            var isCIS = cisLanguages.some(function(lang) {
-                return userLang.startsWith(lang);
-            });
-            
-            if (isCIS) {
-                // 🇷🇺 Forwards safely using clean Percent-Encoding for @ДейлиТвик
-                window.location.replace("https://www.youtube.com/@ДейлиТвик");
-            } else {
-                // 🇺🇸 Forwards directly to your specific English Channel handle @DailyTweak
-                window.location.replace("https://www.youtube.com/@DailyTweak");
-            }
-        })();
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DailyTweak</title>
+<style>
+  :root{
+    --bg:#F2F4F7; --grid:#E0E4EB; --ink:#161A23;
+    --accent:#234EDE; --muted:#687082; --card:#FAFAFC; --border:#D2D7E0;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{
+    background-color:var(--bg);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size:48px 48px;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--ink);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .card{
+    max-width:480px; width:90%;
+    background:var(--card); border:1px solid var(--border); border-radius:18px;
+    padding:40px 36px; text-align:center;
+    box-shadow:0 1px 3px rgba(20,24,32,.06);
+  }
+  .wordmark{font-size:34px; font-weight:800; letter-spacing:-.5px; margin:0 0 6px;}
+  .wordmark span{color:var(--accent);}
+  .sub{color:var(--muted); font-size:14px; margin:0 0 28px;}
+  .choices{display:flex; flex-direction:column; gap:12px; margin-bottom:18px;}
+  .choice{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    padding:14px 18px; border-radius:12px; border:1.5px solid var(--border);
+    background:#fff; color:var(--ink); text-decoration:none;
+    font-size:16px; font-weight:600; transition:border-color .15s, transform .1s;
+  }
+  .choice:hover{border-color:var(--accent); transform:translateY(-1px);}
+  .status{
+    font-size:13px; color:var(--muted); min-height:18px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  .status a{color:var(--accent); text-decoration:underline; cursor:pointer;}
+  .region-note{font-size:12px; color:var(--muted); margin:-6px 0 18px; opacity:.85;}
+</style>
 </head>
-<body style="background-color: #000;">
+<body>
+
+<div class="card">
+  <p class="wordmark">Daily<span>Tweak</span></p>
+  <p class="sub">App, software &amp; electronics reviews — tested like an engineer.</p>
+
+  <div class="choices">
+    <a class="choice" href="https://www.youtube.com/@dailytweak" id="enLink">
+      🇺🇸 Watch in English
+    </a>
+    <a class="choice" href="https://www.youtube.com/@дейлитвик" id="ruLink">
+      🇰🇿 Смотреть на русском
+    </a>
+  </div>
+  <p class="region-note">Also reaching a Russian-speaking audience across Central Asia</p>
+
+  <p class="status" id="status"></p>
+</div>
+
+<script>
+(function () {
+  // TODO: once the Russian channel handle finishes its 14-day rename
+  // lock and becomes @dailytweakrus, update ruLink's href above
+  // (currently pointing at the percent-encoded Cyrillic handle @ДейлиТвик).
+
+  var userLang = (navigator.language || navigator.userLanguage || "en").toLowerCase();
+  var cisLanguages = ["ru", "kk", "be", "uz", "ky", "tg", "am", "az", "tk"];
+  var isCIS = cisLanguages.some(function (lang) { return userLang.startsWith(lang); });
+
+  var target = isCIS ? document.getElementById("ruLink").href : document.getElementById("enLink").href;
+
+  var countdownText = isCIS
+    ? function (s) { return "Переходим на русскоязычный канал через " + s + " сек… <a id='cancelLink'>Остаться здесь</a>"; }
+    : function (s) { return "Taking you to the English channel in " + s + "s… <a id='cancelLink'>Stay here</a>"; };
+
+  var cancelText = isCIS
+    ? "Хорошо — выберите канал выше, когда будете готовы."
+    : "Okay — pick a channel above whenever you're ready.";
+
+  var statusEl = document.getElementById("status");
+  var seconds = 3;
+  var timer = null;
+
+  function attachCancel() {
+    var c = document.getElementById("cancelLink");
+    if (c) {
+      c.onclick = function () {
+        clearInterval(timer);
+        statusEl.textContent = cancelText;
+      };
+    }
+  }
+
+  function tick() {
+    if (seconds <= 0) {
+      clearInterval(timer);
+      window.location.href = target;
+      return;
+    }
+    statusEl.innerHTML = countdownText(seconds);
+    attachCancel();
+    seconds--;
+  }
+
+  tick();
+  timer = setInterval(tick, 1000);
+})();
+</script>
+
 </body>
 </html>
