@@ -138,7 +138,10 @@
     remaining--;
     if (remaining <= 0) {
       clearInterval(timer);
-      window.location.href = target;
+      var t = document.getElementById("toggleLink");
+      if (t) t.onclick = null;
+      fillEl.style.width = "0%";
+      setTimeout(function () { window.location.href = target; }, 1000);
       return;
     }
     showRunning();
