@@ -9,6 +9,7 @@
 <meta property="og:description" content="App, software & electronics reviews — tested like an engineer.">
 <meta property="og:url" content="https://dailytweak.com">
 <meta property="og:type" content="website">
+<script data-goatcounter="https://YOURCODE.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 <style>
   :root{
     --bg:#F2F4F7; --grid:#E0E4EB; --ink:#161A23;
@@ -61,10 +62,10 @@
   <p class="sub">App, software &amp; electronics reviews — tested like an engineer.</p>
 
   <div class="choices">
-    <a class="choice" href="https://www.youtube.com/@dailytweak" id="enLink">
+    <a class="choice" href="https://www.youtube.com/@dailytweak" id="enLink" data-goatcounter-click="watch-english">
       🇺🇸 Watch in English
     </a>
-    <a class="choice" href="https://www.youtube.com/@дейлитвик" id="ruLink">
+    <a class="choice" href="https://www.youtube.com/@дейлитвик" id="ruLink" data-goatcounter-click="watch-russian">
       🇰🇿 Смотреть на русском
     </a>
   </div>
@@ -134,13 +135,22 @@
     attachToggle();
   }
 
+  function fireAutoRedirectEvent() {
+    if (window.goatcounter && window.goatcounter.count) {
+      window.goatcounter.count({
+        path: isCIS ? "auto-redirect-russian" : "auto-redirect-english",
+        event: true
+      });
+    }
+  }
+
   function tick() {
     remaining--;
     if (remaining <= 0) {
       clearInterval(timer);
-      var t = document.getElementById("toggleLink");
-      if (t) t.onclick = null;
       fillEl.style.width = "0%";
+      statusEl.innerHTML = isCIS ? "Переходим…" : "Redirecting…";
+      fireAutoRedirectEvent();
       setTimeout(function () { window.location.href = target; }, 1000);
       return;
     }
