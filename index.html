@@ -5,6 +5,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DailyTweak</title>
+<meta property="og:title" content="DailyTweak">
+<meta property="og:description" content="App, software & electronics reviews — tested like an engineer.">
+<meta property="og:url" content="https://dailytweak.com">
+<meta property="og:type" content="website">
 <style>
   :root{
     --bg:#F2F4F7; --grid:#E0E4EB; --ink:#161A23;
@@ -44,6 +48,9 @@
     font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
   }
   .status a{color:var(--accent); text-decoration:underline; cursor:pointer;}
+  .status .count{color:var(--accent); font-weight:700; font-size:15px;}
+  .progress-track{height:4px; background:var(--border); border-radius:2px; margin-top:10px; overflow:hidden;}
+  .progress-fill{height:100%; width:100%; background:var(--accent); border-radius:2px; transition:width 1s linear;}
   .region-note{font-size:12px; color:var(--muted); margin:-6px 0 18px; opacity:.85;}
 </style>
 </head>
@@ -63,7 +70,8 @@
   </div>
   <p class="region-note">Also reaching a Russian-speaking audience across Central Asia</p>
 
-  <p class="status" id="status"></p>
+  <p class="status" id="status" aria-live="polite" aria-atomic="true"></p>
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
 </div>
 
 <script>
@@ -78,40 +86,65 @@
 
   var target = isCIS ? document.getElementById("ruLink").href : document.getElementById("enLink").href;
 
+  function numSpan(s) { return "<span class='count'>" + s + "</span>"; }
+
   var countdownText = isCIS
-    ? function (s) { return "Переходим на русскоязычный канал через " + s + " сек… <a id='cancelLink'>Остаться здесь</a>"; }
-    : function (s) { return "Taking you to the English channel in " + s + "s… <a id='cancelLink'>Stay here</a>"; };
+    ? function (s) { return "Переходим на русскоязычный канал через " + numSpan(s) + " сек… <a id='toggleLink'>Пауза</a>"; }
+    : function (s) { return "Taking you to the English channel in " + numSpan(s) + "s… <a id='toggleLink'>Pause</a>"; };
 
-  var cancelText = isCIS
-    ? "Хорошо — выберите канал выше, когда будете готовы."
-    : "Okay — pick a channel above whenever you're ready.";
+  var pausedText = isCIS
+    ? function (s) { return "Пауза на " + numSpan(s) + " сек — <a id='toggleLink'>Продолжить</a>"; }
+    : function (s) { return "Paused at " + numSpan(s) + "s — <a id='toggleLink'>Resume</a>"; };
 
-  var statusEl = document.getElementById("status");
-  var seconds = 5;
+  var TOTAL = 5;
+  var remaining = TOTAL;
   var timer = null;
+  var paused = false;
+  var statusEl = document.getElementById("status");
+  var fillEl = document.getElementById("progressFill");
 
-  function attachCancel() {
-    var c = document.getElementById("cancelLink");
-    if (c) {
-      c.onclick = function () {
+  function updateFill() {
+    fillEl.style.width = Math.max(0, (remaining / TOTAL) * 100) + "%";
+  }
+
+  function attachToggle() {
+    var t = document.getElementById("toggleLink");
+    if (!t) return;
+    t.onclick = function () {
+      if (paused) {
+        paused = false;
+        showRunning();
+        timer = setInterval(tick, 1000);
+      } else {
+        paused = true;
         clearInterval(timer);
-        statusEl.textContent = cancelText;
-      };
-    }
+        showPaused();
+      }
+    };
+  }
+
+  function showRunning() {
+    statusEl.innerHTML = countdownText(remaining);
+    updateFill();
+    attachToggle();
+  }
+
+  function showPaused() {
+    statusEl.innerHTML = pausedText(remaining);
+    attachToggle();
   }
 
   function tick() {
-    if (seconds <= 0) {
+    remaining--;
+    if (remaining <= 0) {
       clearInterval(timer);
       window.location.href = target;
       return;
     }
-    statusEl.innerHTML = countdownText(seconds);
-    attachCancel();
-    seconds--;
+    showRunning();
   }
 
-  tick();
+  showRunning();
   timer = setInterval(tick, 1000);
 })();
 </script>
